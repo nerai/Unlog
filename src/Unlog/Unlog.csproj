@@ -42,11 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleLogTarget.cs" />
-    <Compile Include="QuicklogFileLogTarget.cs" />
+    <Compile Include="LogBlock.cs" />
+    <Compile Include="FileLogTarget.cs" />
     <Compile Include="ILogTarget.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ConsoleColorRgbExtensions.cs" />
+    <Compile Include="Util\Debugging.cs" />
     <Compile Include="Util\LiteralConversion.cs" />
     <Compile Include="Util\CuttingStringReader.cs" />
     <Compile Include="Util\StringCutting.cs" />
