@@ -37,7 +37,8 @@ namespace Unlog.AdditionalTargets
 				if (_Back != null) {
 					var dcol = _Back.Value;
 					var mcol = Color.FromArgb (dcol.A, dcol.R, dcol.G, dcol.B);
-					range.ApplyPropertyValue (TextElement.BackgroundProperty, mcol);
+					var brush = new SolidColorBrush (mcol);
+					range.ApplyPropertyValue (TextElement.BackgroundProperty, brush);
 				}
 
 				_RTF.ScrollToEnd ();
