@@ -14,12 +14,13 @@ namespace Unlog.AdditionalTargets
 	{
 		private readonly RichTextBox _RTF;
 
-		private System.Drawing.Color? _Fore = null;
-		private System.Drawing.Color? _Back = null;
+		private Color _Fore;
+		private Color _Back;
 
 		public WpfRtfLogTarget (RichTextBox rtf)
 		{
 			_RTF = rtf;
+			ResetColors ();
 		}
 
 		public void Write (string s)
@@ -27,19 +28,8 @@ namespace Unlog.AdditionalTargets
 			_RTF.Dispatcher.Invoke ((Action) (() => {
 				var range = new TextRange (_RTF.Document.ContentEnd, _RTF.Document.ContentEnd);
 				range.Text = s;
-
-				if (_Fore != null) {
-					var dcol = _Fore.Value;
-					var mcol = Color.FromArgb (dcol.A, dcol.R, dcol.G, dcol.B);
-					var brush = new SolidColorBrush (mcol);
-					range.ApplyPropertyValue (TextElement.ForegroundProperty, brush);
-				}
-				if (_Back != null) {
-					var dcol = _Back.Value;
-					var mcol = Color.FromArgb (dcol.A, dcol.R, dcol.G, dcol.B);
-					var brush = new SolidColorBrush (mcol);
-					range.ApplyPropertyValue (TextElement.BackgroundProperty, brush);
-				}
+				range.ApplyPropertyValue (TextElement.ForegroundProperty, new SolidColorBrush (_Fore));
+				range.ApplyPropertyValue (TextElement.BackgroundProperty, new SolidColorBrush (_Back));
 
 				_RTF.ScrollToEnd ();
 			}));
@@ -47,18 +37,20 @@ namespace Unlog.AdditionalTargets
 
 		public void SetForegroundColor (ConsoleColor c)
 		{
-			_Fore = c.ToRGB ();
+			var dcol = c.ToRGB ();
+			_Fore = Color.FromArgb (dcol.A, dcol.R, dcol.G, dcol.B);
 		}
 
 		public void SetBackgroundColor (ConsoleColor c)
 		{
-			_Back = c.ToRGB ();
+			var dcol = c.ToRGB ();
+			_Back = Color.FromArgb (dcol.A, dcol.R, dcol.G, dcol.B);
 		}
 
 		public void ResetColors ()
 		{
-			_Fore = null;
-			_Back = null;
+			_Fore = Colors.Black;
+			_Back = Colors.White;
 		}
 
 		public void Flush ()
