@@ -25,11 +25,15 @@ namespace Unlog.AdditionalTargets
 
 		public void Write (string s)
 		{
-			_RTF.Dispatcher.Invoke ((Action) (() => {
+			// Capture state locally
+			var fore = _Fore;
+			var back = _Back;
+
+			_RTF.Dispatcher.BeginInvoke ((Action) (() => {
 				var range = new TextRange (_RTF.Document.ContentEnd, _RTF.Document.ContentEnd);
 				range.Text = s;
-				range.ApplyPropertyValue (TextElement.ForegroundProperty, new SolidColorBrush (_Fore));
-				range.ApplyPropertyValue (TextElement.BackgroundProperty, new SolidColorBrush (_Back));
+				range.ApplyPropertyValue (TextElement.ForegroundProperty, new SolidColorBrush (fore));
+				range.ApplyPropertyValue (TextElement.BackgroundProperty, new SolidColorBrush (back));
 
 				_RTF.ScrollToEnd ();
 			}));
