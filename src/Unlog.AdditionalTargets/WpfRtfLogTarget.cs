@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using Unlog;
 using Unlog.Util;
 
 namespace Unlog.AdditionalTargets
 {
-	public class WpfRtfLogTarget : ILogTarget
+    public class WpfRtfLogTarget : ILogTarget
 	{
 		private readonly RichTextBox _RTF;
 

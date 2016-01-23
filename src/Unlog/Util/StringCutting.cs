@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Unlog.Util
 {
-	public static class StringCutting
+    public static class StringCutting
 	{
 		/// <summary>
 		/// Cut off a expected prefix from a string, which is passed by value.
