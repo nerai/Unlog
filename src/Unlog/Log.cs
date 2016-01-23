@@ -205,8 +205,8 @@ namespace Unlog
 				_WriteQueue.Add (task);
 				if (!AllowAsynchronousWriting) {
 					task.Done.WaitOne ();
+				}
 			}
-		}
 		}
 
 		private class WriteTask
@@ -238,13 +238,14 @@ namespace Unlog
 
 		private static void DoWrite (string s)
 		{
+			var targets = Targets.ToArray (); // TODO unsave concurrent access
 			var rs = new CuttingStringReader (s);
 			var sb = new StringBuilder ();
 
 			while (rs.RemainingLength > 0) {
 				// Case "\~ "
 				if (rs.Eat ("\\~ ")) {
-					foreach (var t in Targets) {
+					foreach (var t in targets) {
 						t.Write (sb.ToString ());
 						t.ResetColors ();
 					}
@@ -257,7 +258,7 @@ namespace Unlog
 				if (rs.Eat ("\\F")) {
 					var c = Int32.Parse (new string (rs.Read (), 1), NumberStyles.HexNumber);
 
-					foreach (var t in Targets) {
+					foreach (var t in targets) {
 						t.Write (sb.ToString ());
 						t.SetForegroundColor ((ConsoleColor) c);
 					}
@@ -270,7 +271,7 @@ namespace Unlog
 				if (rs.Eat ("\\B")) {
 					var c = Int32.Parse (new string (rs.Read (), 1), NumberStyles.HexNumber);
 
-					foreach (var t in Targets) {
+					foreach (var t in targets) {
 						t.Write (sb.ToString ());
 						t.SetBackgroundColor ((ConsoleColor) c);
 					}
@@ -286,7 +287,7 @@ namespace Unlog
 				}
 			}
 
-			foreach (var t in Targets) {
+			foreach (var t in targets) {
 				t.Write (sb.ToString ());
 				t.Flush ();
 			}
