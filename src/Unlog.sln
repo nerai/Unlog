@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unlog", "Unlog\Unlog.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnlogTest", "UnlogTest\UnlogTest.csproj", "{B3C6CAD0-C9F6-49E4-B3B9-2E1A43D5AE8B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unlog.AdditionalTargets", "Unlog.AdditionalTargets\Unlog.AdditionalTargets.csproj", "{C2381728-9694-467F-9910-9622903AA66E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,16 @@ Global
 		{B3C6CAD0-C9F6-49E4-B3B9-2E1A43D5AE8B}.Release|Mixed Platforms.Build.0 = Release|x86
 		{B3C6CAD0-C9F6-49E4-B3B9-2E1A43D5AE8B}.Release|x86.ActiveCfg = Release|x86
 		{B3C6CAD0-C9F6-49E4-B3B9-2E1A43D5AE8B}.Release|x86.Build.0 = Release|x86
+		{C2381728-9694-467F-9910-9622903AA66E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2381728-9694-467F-9910-9622903AA66E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2381728-9694-467F-9910-9622903AA66E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C2381728-9694-467F-9910-9622903AA66E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C2381728-9694-467F-9910-9622903AA66E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C2381728-9694-467F-9910-9622903AA66E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2381728-9694-467F-9910-9622903AA66E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2381728-9694-467F-9910-9622903AA66E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C2381728-9694-467F-9910-9622903AA66E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C2381728-9694-467F-9910-9622903AA66E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
