@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Unlog.Util;
 
 namespace Unlog
@@ -28,6 +30,19 @@ namespace Unlog
 		{
 			_Cur = new Log (false, false);
 			Targets.Add (new ConsoleLogTarget ());
+			AllowAsynchronousWriting = true;
+
+			var writeThread = new Thread (WriteThread) {
+				Name = "Unlog write thread",
+				IsBackground = true
+			};
+			writeThread.Start ();
+		}
+
+		public static bool AllowAsynchronousWriting
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -186,19 +201,51 @@ namespace Unlog
 				_Stash.Append (s);
 			}
 			else {
-				DoWrite (s);
+				var task = new WriteTask (s);
+				_WriteQueue.Add (task);
+				if (!AllowAsynchronousWriting) {
+					task.Done.WaitOne ();
+				}
 			}
 		}
 
-		private void DoWrite (string s)
+		private class WriteTask
 		{
+			public readonly ManualResetEvent Done = new ManualResetEvent (false);
+			public readonly string S;
+
+			public WriteTask (string s)
+			{
+				S = s;
+			}
+		}
+
+		private static readonly BlockingCollection<WriteTask> _WriteQueue = new BlockingCollection<WriteTask> ();
+
+		private static void WriteThread ()
+		{
+			for (; ; ) {
+				var task = _WriteQueue.Take ();
+				DoWrite (task.S);
+				task.Done.Set ();
+			}
+		}
+
+		public static int MeasureWriteBacklog ()
+		{
+			return _WriteQueue.Count;
+		}
+
+		private static void DoWrite (string s)
+		{
+			var targets = Targets.ToArray (); // TODO unsave concurrent access
 			var rs = new CuttingStringReader (s);
 			var sb = new StringBuilder ();
 
 			while (rs.RemainingLength > 0) {
 				// Case "\~ "
 				if (rs.Eat ("\\~ ")) {
-					foreach (var t in Targets) {
+					foreach (var t in targets) {
 						t.Write (sb.ToString ());
 						t.ResetColors ();
 					}
@@ -211,7 +258,7 @@ namespace Unlog
 				if (rs.Eat ("\\F")) {
 					var c = Int32.Parse (new string (rs.Read (), 1), NumberStyles.HexNumber);
 
-					foreach (var t in Targets) {
+					foreach (var t in targets) {
 						t.Write (sb.ToString ());
 						t.SetForegroundColor ((ConsoleColor) c);
 					}
@@ -224,7 +271,7 @@ namespace Unlog
 				if (rs.Eat ("\\B")) {
 					var c = Int32.Parse (new string (rs.Read (), 1), NumberStyles.HexNumber);
 
-					foreach (var t in Targets) {
+					foreach (var t in targets) {
 						t.Write (sb.ToString ());
 						t.SetBackgroundColor ((ConsoleColor) c);
 					}
@@ -240,7 +287,7 @@ namespace Unlog
 				}
 			}
 
-			foreach (var t in Targets) {
+			foreach (var t in targets) {
 				t.Write (sb.ToString ());
 				t.Flush ();
 			}
