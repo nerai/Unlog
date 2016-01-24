@@ -16,7 +16,14 @@ namespace Unlog
 		///
 		/// The targets are global, not per instance.
 		/// </summary>
-		public static List<ILogTarget> Targets = new List<ILogTarget> ();
+		private static List<ILogTarget> _Targets = new List<ILogTarget> ();
+
+		/// <summary>
+		/// The target is uses copy-on-write to avoid the requirement to lock for read operations. This lock is
+		/// only required for changes to the list, and the changes must be applied atomically by replacing the
+		/// whole list.
+		/// </summary>
+		private static readonly object _TargetsLock = new object ();
 
 		/// <summary>
 		/// Out current log node. It is nested inside all its ancestors.
@@ -29,7 +36,7 @@ namespace Unlog
 		static Log ()
 		{
 			_Cur = new Log (false, false);
-			Targets.Add (new ConsoleLogTarget ());
+			AddTarget (new ConsoleLogTarget ());
 			AllowAsynchronousWriting = true;
 
 			var writeThread = new Thread (WriteThread) {
@@ -37,6 +44,29 @@ namespace Unlog
 				IsBackground = true
 			};
 			writeThread.Start ();
+		}
+
+		public static void AddTarget (ILogTarget t) {
+			lock (_TargetsLock) {
+				var list = new List<ILogTarget> (_Targets);
+				list.Add (t);
+				_Targets = list;
+			}
+		}
+
+		public static void RemoveTarget (ILogTarget t) {
+			lock (_TargetsLock) {
+				var list = new List<ILogTarget> (_Targets);
+				list.Remove (t);
+				_Targets = list;
+			}
+		}
+
+		public static void ClearTargets () {
+			lock (_TargetsLock) {
+				var list = new List<ILogTarget> ();
+				_Targets = list;
+			}
 		}
 
 		public static bool AllowAsynchronousWriting
@@ -51,7 +81,7 @@ namespace Unlog
 		public static void AddDefaultFileTarget ()
 		{
 			var path = "log " + DateTime.UtcNow.ToString ("yyyy.MM.dd HH.mm.ss") + ".ql";
-			Targets.Add (new FileLogTarget (path));
+			AddTarget (new FileLogTarget (path));
 		}
 
 		/// <summary>
@@ -239,7 +269,7 @@ namespace Unlog
 
 		private static void DoWrite (string s, bool flush)
 		{
-			var targets = Targets.ToArray (); // TODO unsave concurrent access
+			var targets = _Targets; // _Targets may be replaced (copy-on-write), so grab a single reference to be used throughout this method
 			var rs = new CuttingStringReader (s);
 			var sb = new StringBuilder ();
 

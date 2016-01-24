@@ -49,8 +49,8 @@ namespace UnlogTest
 
 			public void Run (string[] data)
 			{
-				Log.Targets.Clear ();
-				Log.Targets.Add (Create ());
+				Log.ClearTargets ();
+				Log.AddTarget (Create ());
 
 				var t0 = DateTime.UtcNow;
 				int n = data.Length;
@@ -140,8 +140,8 @@ namespace UnlogTest
 			}
 
 			Console.Clear ();
-			Log.Targets.Clear ();
-			Log.Targets.Add (new ConsoleLogTarget ());
+			Log.ClearTargets ();
+			Log.AddTarget (new ConsoleLogTarget ());
 
 			Log.WriteLine ("Measurements completed");
 			Log.WriteLine (data.Sum (s => s.Length) / data.Length + " bytes per write");

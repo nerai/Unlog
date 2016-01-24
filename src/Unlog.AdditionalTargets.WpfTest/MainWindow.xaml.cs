@@ -21,7 +21,7 @@ namespace Unlog.AdditionalTargets.WpfTest
 			InitializeComponent ();
 
 			var t = new WpfRtfLogTarget (rtfBox);
-			Log.Targets.Add (t);
+			Log.AddTarget (t);
 			Log.AllowAsynchronousWriting = false;
 
 			/*
