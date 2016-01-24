@@ -21,7 +21,7 @@ namespace Unlog.AdditionalTargets.WpfTest
 			InitializeComponent ();
 
 			var t = new WpfRtfLogTarget (rtfBox);
-			Log.Targets.Add (t);
+			Log.AddTarget (t);
 			Log.AllowAsynchronousWriting = false;
 
 			/*
@@ -67,6 +67,17 @@ namespace Unlog.AdditionalTargets.WpfTest
 			Log.ResetColor ();
 			Log.Write ("(Reset),");
 			Log.WriteLine ();
+
+			/*
+			 * Test fore- and background colors
+			 */
+			Log.ForegroundColor = ConsoleColor.White;
+			Log.BackgroundColor = ConsoleColor.Black;
+			Log.WriteLine ("White on black");
+			Log.ForegroundColor = ConsoleColor.Cyan;
+			Log.BackgroundColor = ConsoleColor.Magenta;
+			Log.WriteLine ("Cyan on magenta");
+			Log.ResetColor ();
 
 			/*
 			 * Done!
