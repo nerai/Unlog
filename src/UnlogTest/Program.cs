@@ -26,8 +26,8 @@ namespace UnlogTest
 			{
 			}
 
-			private readonly List<double> Times = new List<double> ();
-			private readonly List<double> BacklogTimes = new List<double> ();
+			protected readonly List<double> Times = new List<double> ();
+			protected readonly List<double> BacklogTimes = new List<double> ();
 
 			public double MedianTime (bool includeBacklog)
 			{
@@ -40,7 +40,7 @@ namespace UnlogTest
 					.First ();
 			}
 
-			public void Run (string[] data)
+			public virtual void Run (string[] data)
 			{
 				Log.ClearTargets ();
 				Log.AddTarget (Create ());
@@ -111,6 +111,25 @@ namespace UnlogTest
 			}
 		}
 
+		private class TestDirectConsole : Tester
+		{
+			internal override ILogTarget Create () {
+				throw new NotSupportedException ();
+			}
+
+			public override void Run (string[] data) {
+				var t0 = DateTime.UtcNow;
+				int n = data.Length;
+				for (int i = 0; i < n; i++) {
+					Console.WriteLine (data[i]);
+				}
+				var t1 = DateTime.UtcNow;
+				var dt1 = t1.Subtract (t0).TotalMilliseconds;
+				Times.Add (dt1);
+				BacklogTimes.Add (dt1);
+			}
+		}
+
 		static void Main (string[] args)
 		{
 			Log.WriteLine ("Generating test data");
@@ -120,6 +139,7 @@ namespace UnlogTest
 				.Select (i => GenerateNoise (i * i % 361 + i % 169))
 				.ToArray ();
 			var results = new Tester[] {
+				new TestDirectConsole (),
 				new TestNull (),
 				new TestConsole (),
 				new TestFile (),
