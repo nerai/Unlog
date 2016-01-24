@@ -155,14 +155,21 @@ namespace UnlogTest
 			Log.AddTarget (new ConsoleLogTarget ());
 
 			Log.WriteLine ("Measurements completed");
-			Log.WriteLine (data.Sum (s => s.Length) / data.Length + " bytes per write");
+			var totalBytes = data.Sum (s => s.Length);
+			var bytesPerCall = 1.0 * totalBytes / data.Length;
+			Log.WriteLine (bytesPerCall.ToString("0.0") + " bytes per write");
 
 			foreach (var tester in results) {
-				var dt1 = tester.MedianTime (false) / DataCount * 1000;
-				var dt2 = tester.MedianTime (true) / DataCount * 1000;
+				var t1 = tester.MedianTime (false);
+				var t2 = tester.MedianTime (true);
+				var dt1 = t1 / DataCount * 1000;
+				var dt2 = t2 / DataCount * 1000;
+				var callsPerSecond1 = DataCount / t1;
+				var callsPerSecond2 = DataCount / t2;
 				Console.WriteLine (""
 					+ tester.Name + ": "
-					+ dt1.ToString ("0.0") + " / " + dt2.ToString ("0.0") + " ns");
+					+ dt1.ToString ("0.0") + " / " + dt2.ToString ("0.0") + " µs, "
+					+ callsPerSecond1.ToString ("0.0") + " / " + callsPerSecond2.ToString ("0.0") + " Hz");
 			}
 
 			Console.ReadKey (true);
