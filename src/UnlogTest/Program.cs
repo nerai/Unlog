@@ -53,7 +53,7 @@ namespace UnlogTest
 				var t1 = DateTime.UtcNow;
 
 				while (Log.MeasureWriteBacklog () != 0) {
-					Thread.Sleep (10);
+					Thread.Sleep (1);
 				}
 				var t2 = DateTime.UtcNow;
 
