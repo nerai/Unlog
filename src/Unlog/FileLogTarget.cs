@@ -12,7 +12,7 @@ namespace Unlog
 	/// File Target. Logs data to a text file in a simple text format which can later be
 	/// converted to human readable formats (e.g. a HTML page).
 	/// </summary>
-	public class FileLogTarget : ILogTarget
+	public class FileLogTarget : ILogTarget, IDisposable
 	{
 		private readonly StreamWriter outF;
 
@@ -109,5 +109,10 @@ namespace Unlog
 				sw.WriteLine ("</HTML>");
 			}
 		}
-	}
+
+        public void Dispose ()
+        {
+            outF.Dispose ();
+        }
+    }
 }

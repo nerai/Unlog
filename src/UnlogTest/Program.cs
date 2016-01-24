@@ -92,24 +92,27 @@ namespace UnlogTest
 		private class TestFile : Tester
 		{
 			private string path;
+            private FileLogTarget target;
 
-			internal override ILogTarget Create ()
+            internal override ILogTarget Create ()
 			{
 				path = "unlog test file " + DateTime.UtcNow.Ticks + ".log";
-				return new FileLogTarget (path);
+                target = new FileLogTarget (path);
+                return target;
 			}
 
 			internal override void Cleanup ()
 			{
+                target.Dispose ();
+
 				int i = 0;
 				while (File.Exists (path) && i++ < 10) {
 					try {
-						// TODO: impossible because logger still running
 						File.Delete (path);
 					}
 					catch (IOException) {
 						// ignore, repeat
-						Thread.Sleep (100);
+						Thread.Sleep (10);
 					}
 				}
 			}
