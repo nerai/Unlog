@@ -131,7 +131,7 @@ namespace UnlogTest
 		static void Main (string[] args)
 		{
 			Log.WriteLine ("Generating test data");
-			const int DataCount = 1000;
+			const int DataCount = 10000;
 			var data = Enumerable
 				.Range (0, DataCount)
 				.Select (i => GenerateNoise (i * i % 361 + i % 169))
