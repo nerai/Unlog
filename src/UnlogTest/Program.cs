@@ -12,18 +12,11 @@ namespace UnlogTest
 	{
 		private abstract class Tester
 		{
-			private string _Name = null;
-
 			public string Name
 			{
 				get
 				{
-					if (_Name == null) {
-						var t = Create ();
-						_Name = t.GetType ().Name;
-						Cleanup ();
-					}
-					return _Name;
+					return GetType ().Name.Replace ("Test", "");
 				}
 			}
 
