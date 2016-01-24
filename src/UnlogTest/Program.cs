@@ -57,8 +57,8 @@ namespace UnlogTest
 				}
 				var t2 = DateTime.UtcNow;
 
-				var dt1 = t1.Subtract (t0).TotalMilliseconds;
-				var dt2 = t2.Subtract (t0).TotalMilliseconds;
+				var dt1 = t1.Subtract (t0).TotalSeconds;
+				var dt2 = t2.Subtract (t0).TotalSeconds;
 				Times.Add (dt1);
 				BacklogTimes.Add (dt2);
 
@@ -122,7 +122,7 @@ namespace UnlogTest
 					Console.WriteLine (data[i]);
 				}
 				var t1 = DateTime.UtcNow;
-				var dt1 = t1.Subtract (t0).TotalMilliseconds;
+				var dt1 = t1.Subtract (t0).TotalSeconds;
 				Times.Add (dt1);
 				BacklogTimes.Add (dt1);
 			}
@@ -162,14 +162,14 @@ namespace UnlogTest
 			foreach (var tester in results) {
 				var t1 = tester.MedianTime (false);
 				var t2 = tester.MedianTime (true);
-				var dt1 = t1 / DataCount * 1000;
-				var dt2 = t2 / DataCount * 1000;
-				var callsPerSecond1 = DataCount / t1;
-				var callsPerSecond2 = DataCount / t2;
+				var dt1 = t1 / DataCount * 1000 * 1000;
+				var dt2 = t2 / DataCount * 1000 * 1000;
+				var kcallsPerSecond1 = DataCount / t1 / 1000;
+				var kcallsPerSecond2 = DataCount / t2 / 1000;
 				Console.WriteLine (""
 					+ tester.Name + ": "
 					+ dt1.ToString ("0.0") + " / " + dt2.ToString ("0.0") + " µs, "
-					+ callsPerSecond1.ToString ("0.0") + " / " + callsPerSecond2.ToString ("0.0") + " Hz");
+					+ kcallsPerSecond1.ToString ("0.0") + " / " + kcallsPerSecond2.ToString ("0.0") + " kHz");
 			}
 
 			Console.ReadKey (true);
