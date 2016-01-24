@@ -69,6 +69,17 @@ namespace Unlog.AdditionalTargets.WpfTest
 			Log.WriteLine ();
 
 			/*
+			 * Test fore- and background colors
+			 */
+			Log.ForegroundColor = ConsoleColor.White;
+			Log.BackgroundColor = ConsoleColor.Black;
+			Log.WriteLine ("White on black");
+			Log.ForegroundColor = ConsoleColor.Cyan;
+			Log.BackgroundColor = ConsoleColor.Magenta;
+			Log.WriteLine ("Cyan on magenta");
+			Log.ResetColor ();
+
+			/*
 			 * Done!
 			 */
 			Log.WriteLine ("Test complete");
