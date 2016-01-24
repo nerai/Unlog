@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using Unlog;
 using Unlog.Util;
 
 namespace Unlog.AdditionalTargets
 {
-	public class WpfRtfLogTarget : ILogTarget
+    public class WpfRtfLogTarget : ILogTarget
 	{
 		private readonly RichTextBox _RTF;
 
@@ -25,11 +21,15 @@ namespace Unlog.AdditionalTargets
 
 		public void Write (string s)
 		{
-			_RTF.Dispatcher.Invoke ((Action) (() => {
+			// Capture state locally
+			var fore = _Fore;
+			var back = _Back;
+
+			_RTF.Dispatcher.BeginInvoke ((Action) (() => {
 				var range = new TextRange (_RTF.Document.ContentEnd, _RTF.Document.ContentEnd);
 				range.Text = s;
-				range.ApplyPropertyValue (TextElement.ForegroundProperty, new SolidColorBrush (_Fore));
-				range.ApplyPropertyValue (TextElement.BackgroundProperty, new SolidColorBrush (_Back));
+				range.ApplyPropertyValue (TextElement.ForegroundProperty, new SolidColorBrush (fore));
+				range.ApplyPropertyValue (TextElement.BackgroundProperty, new SolidColorBrush (back));
 
 				_RTF.ScrollToEnd ();
 			}));

@@ -226,7 +226,8 @@ namespace Unlog
 		{
 			for (; ; ) {
 				var task = _WriteQueue.Take ();
-				DoWrite (task.S);
+				var flush = !_WriteQueue.Any ();
+				DoWrite (task.S, flush);
 				task.Done.Set ();
 			}
 		}
@@ -236,7 +237,7 @@ namespace Unlog
 			return _WriteQueue.Count;
 		}
 
-		private static void DoWrite (string s)
+		private static void DoWrite (string s, bool flush)
 		{
 			var targets = Targets.ToArray (); // TODO unsave concurrent access
 			var rs = new CuttingStringReader (s);
@@ -289,9 +290,15 @@ namespace Unlog
 
 			foreach (var t in targets) {
 				t.Write (sb.ToString ());
-				t.Flush ();
 			}
 			sb.Clear ();
+
+			if (flush) {
+				foreach (var t in targets)
+				{
+					t.Flush ();
+				}
+			}
 		}
 
 		public static void Write<T> (T print)
