@@ -85,18 +85,16 @@ namespace UnlogTest
 		private class TestFile : Tester
 		{
 			private string path;
-            private FileLogTarget target;
+			private FileLogTarget target;
 
-            internal override ILogTarget Create ()
-			{
+			internal override ILogTarget Create () {
 				path = "unlog test file " + DateTime.UtcNow.Ticks + ".log";
-                target = new FileLogTarget (path);
-                return target;
+				target = new FileLogTarget (path);
+				return target;
 			}
 
-			internal override void Cleanup ()
-			{
-                target.Dispose ();
+			internal override void Cleanup () {
+				target.Dispose ();
 
 				int i = 0;
 				while (File.Exists (path) && i++ < 10) {
