@@ -37,7 +37,7 @@ namespace Unlog
 		{
 			_Cur = new Log (false, false);
 			AddTarget (new ConsoleLogTarget ());
-			AllowAsynchronousWriting = true;
+			AllowAsynchronousWriting = false;
 
 			var writeThread = new Thread (WriteThread) {
 				Name = "Unlog write thread",
