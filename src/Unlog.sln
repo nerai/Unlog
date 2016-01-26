@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unlog", "Unlog\Unlog.csproj", "{2D609E79-2E6A-4BE6-B821-DDBD4A2E8DEC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnlogTest", "UnlogTest\UnlogTest.csproj", "{B3C6CAD0-C9F6-49E4-B3B9-2E1A43D5AE8B}"

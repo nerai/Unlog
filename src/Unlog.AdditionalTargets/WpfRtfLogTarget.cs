@@ -6,12 +6,15 @@ using Unlog.Util;
 
 namespace Unlog.AdditionalTargets
 {
-    public class WpfRtfLogTarget : ILogTarget
+	public class WpfRtfLogTarget : ILogTarget
 	{
 		private readonly RichTextBox _RTF;
 
 		private Color _Fore;
 		private Color _Back;
+
+		public Color DefaultForegroundColor = Colors.Black;
+		public Color DefaultBackgroundColor = Colors.White;
 
 		public WpfRtfLogTarget (RichTextBox rtf)
 		{
@@ -49,8 +52,8 @@ namespace Unlog.AdditionalTargets
 
 		public void ResetColors ()
 		{
-			_Fore = Colors.Black;
-			_Back = Colors.White;
+			_Fore = DefaultForegroundColor;
+			_Back = DefaultBackgroundColor;
 		}
 
 		public void Flush ()

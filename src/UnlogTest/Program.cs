@@ -12,18 +12,11 @@ namespace UnlogTest
 	{
 		private abstract class Tester
 		{
-			private string _Name = null;
-
 			public string Name
 			{
 				get
 				{
-					if (_Name == null) {
-						var t = Create ();
-						_Name = t.GetType ().Name;
-						Cleanup ();
-					}
-					return _Name;
+					return GetType ().Name.Replace ("Test", "");
 				}
 			}
 
@@ -33,8 +26,8 @@ namespace UnlogTest
 			{
 			}
 
-			private readonly List<double> Times = new List<double> ();
-			private readonly List<double> BacklogTimes = new List<double> ();
+			protected readonly List<double> Times = new List<double> ();
+			protected readonly List<double> BacklogTimes = new List<double> ();
 
 			public double MedianTime (bool includeBacklog)
 			{
@@ -47,7 +40,7 @@ namespace UnlogTest
 					.First ();
 			}
 
-			public void Run (string[] data)
+			public virtual void Run (string[] data)
 			{
 				Log.ClearTargets ();
 				Log.AddTarget (Create ());
@@ -60,12 +53,12 @@ namespace UnlogTest
 				var t1 = DateTime.UtcNow;
 
 				while (Log.MeasureWriteBacklog () != 0) {
-					Thread.Sleep (10);
+					Thread.Sleep (1);
 				}
 				var t2 = DateTime.UtcNow;
 
-				var dt1 = t1.Subtract (t0).TotalMilliseconds;
-				var dt2 = t2.Subtract (t0).TotalMilliseconds;
+				var dt1 = t1.Subtract (t0).TotalSeconds;
+				var dt2 = t2.Subtract (t0).TotalSeconds;
 				Times.Add (dt1);
 				BacklogTimes.Add (dt2);
 
@@ -92,18 +85,16 @@ namespace UnlogTest
 		private class TestFile : Tester
 		{
 			private string path;
-            private FileLogTarget target;
+			private FileLogTarget target;
 
-            internal override ILogTarget Create ()
-			{
+			internal override ILogTarget Create () {
 				path = "unlog test file " + DateTime.UtcNow.Ticks + ".log";
-                target = new FileLogTarget (path);
-                return target;
+				target = new FileLogTarget (path);
+				return target;
 			}
 
-			internal override void Cleanup ()
-			{
-                target.Dispose ();
+			internal override void Cleanup () {
+				target.Dispose ();
 
 				int i = 0;
 				while (File.Exists (path) && i++ < 10) {
@@ -118,15 +109,35 @@ namespace UnlogTest
 			}
 		}
 
+		private class TestDirectConsole : Tester
+		{
+			internal override ILogTarget Create () {
+				throw new NotSupportedException ();
+			}
+
+			public override void Run (string[] data) {
+				var t0 = DateTime.UtcNow;
+				int n = data.Length;
+				for (int i = 0; i < n; i++) {
+					Console.WriteLine (data[i]);
+				}
+				var t1 = DateTime.UtcNow;
+				var dt1 = t1.Subtract (t0).TotalSeconds;
+				Times.Add (dt1);
+				BacklogTimes.Add (dt1);
+			}
+		}
+
 		static void Main (string[] args)
 		{
 			Log.WriteLine ("Generating test data");
-			const int DataCount = 1000;
+			const int DataCount = 10000;
 			var data = Enumerable
 				.Range (0, DataCount)
 				.Select (i => GenerateNoise (i * i % 361 + i % 169))
 				.ToArray ();
 			var results = new Tester[] {
+				new TestDirectConsole (),
 				new TestNull (),
 				new TestConsole (),
 				new TestFile (),
@@ -144,14 +155,21 @@ namespace UnlogTest
 			Log.AddTarget (new ConsoleLogTarget ());
 
 			Log.WriteLine ("Measurements completed");
-			Log.WriteLine (data.Sum (s => s.Length) / data.Length + " bytes per write");
+			var totalBytes = data.Sum (s => s.Length);
+			var bytesPerCall = 1.0 * totalBytes / data.Length;
+			Log.WriteLine (bytesPerCall.ToString("0.0") + " bytes per write");
 
 			foreach (var tester in results) {
-				var dt1 = tester.MedianTime (false) / DataCount * 1000;
-				var dt2 = tester.MedianTime (true) / DataCount * 1000;
+				var t1 = tester.MedianTime (false);
+				var t2 = tester.MedianTime (true);
+				var dt1 = t1 / DataCount * 1000 * 1000;
+				var dt2 = t2 / DataCount * 1000 * 1000;
+				var kcallsPerSecond1 = DataCount / t1 / 1000;
+				var kcallsPerSecond2 = DataCount / t2 / 1000;
 				Console.WriteLine (""
 					+ tester.Name + ": "
-					+ dt1.ToString ("0.0") + " / " + dt2.ToString ("0.0") + " ns");
+					+ dt1.ToString ("0.0") + " / " + dt2.ToString ("0.0") + " µs, "
+					+ kcallsPerSecond1.ToString ("0.0") + " / " + kcallsPerSecond2.ToString ("0.0") + " kHz");
 			}
 
 			Console.ReadKey (true);
