@@ -1,5 +1,5 @@
 #Unlog
-A drop-in replacement for Console.WriteLine
+A drop-in replacement for Console.WriteLine that handles log pipelining, carbon copying (including colorization) to HTML and allows retroactive undo. Unlog is released under MIT license.
 
 Certainly, the most commonly used debugging tool has always been console output. This has a lot of drawbacks, especially for larger projects, and there exist various good alternatives. For C#, NLog or Log4Net would be such options. However, many C# programmers still use Console.Writeline for its simplicity. Being (often) as fast as possible, zero-configuration, and having some (limited) formatting options, like setting fore- and background colors, are also positive traits.
 
