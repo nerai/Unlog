@@ -14,8 +14,7 @@ namespace UnlogTest
 		{
 			public string Name
 			{
-				get
-				{
+				get {
 					return GetType ().Name.Replace ("Test", "");
 				}
 			}
@@ -87,13 +86,15 @@ namespace UnlogTest
 			private string path;
 			private FileLogTarget target;
 
-			internal override ILogTarget Create () {
+			internal override ILogTarget Create ()
+			{
 				path = "unlog test file " + DateTime.UtcNow.Ticks + ".log";
 				target = new FileLogTarget (path);
 				return target;
 			}
 
-			internal override void Cleanup () {
+			internal override void Cleanup ()
+			{
 				target.Dispose ();
 
 				int i = 0;
@@ -111,11 +112,13 @@ namespace UnlogTest
 
 		private class TestDirectConsole : Tester
 		{
-			internal override ILogTarget Create () {
+			internal override ILogTarget Create ()
+			{
 				throw new NotSupportedException ();
 			}
 
-			public override void Run (string[] data) {
+			public override void Run (string[] data)
+			{
 				var t0 = DateTime.UtcNow;
 				int n = data.Length;
 				for (int i = 0; i < n; i++) {
@@ -157,7 +160,7 @@ namespace UnlogTest
 			Log.WriteLine ("Measurements completed");
 			var totalBytes = data.Sum (s => s.Length);
 			var bytesPerCall = 1.0 * totalBytes / data.Length;
-			Log.WriteLine (bytesPerCall.ToString("0.0") + " bytes per write");
+			Log.WriteLine (bytesPerCall.ToString ("0.0") + " bytes per write");
 
 			foreach (var tester in results) {
 				var t1 = tester.MedianTime (false);

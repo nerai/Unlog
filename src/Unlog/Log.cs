@@ -19,9 +19,9 @@ namespace Unlog
 		private static List<ILogTarget> _Targets = new List<ILogTarget> ();
 
 		/// <summary>
-		/// The target is uses copy-on-write to avoid the requirement to lock for read operations. This lock is
-		/// only required for changes to the list, and the changes must be applied atomically by replacing the
-		/// whole list.
+		/// The target uses copy-on-write to avoid the requirement to lock for read
+		/// operations. This lock is only required for changes to the list, and the changes
+		/// must be applied atomically by replacing the whole list.
 		/// </summary>
 		private static readonly object _TargetsLock = new object ();
 
@@ -31,7 +31,8 @@ namespace Unlog
 		private static Log _Cur = null;
 
 		/// <summary>
-		/// Static ctor, adds a console log target which acts as a replacement for Console.Write etc.
+		/// Static ctor, adds a console log target which acts as a replacement for
+		/// Console.Write etc.
 		/// </summary>
 		static Log ()
 		{
@@ -46,7 +47,8 @@ namespace Unlog
 			writeThread.Start ();
 		}
 
-		public static void AddTarget (ILogTarget t) {
+		public static void AddTarget (ILogTarget t)
+		{
 			lock (_TargetsLock) {
 				var list = new List<ILogTarget> (_Targets);
 				list.Add (t);
@@ -54,7 +56,8 @@ namespace Unlog
 			}
 		}
 
-		public static void RemoveTarget (ILogTarget t) {
+		public static void RemoveTarget (ILogTarget t)
+		{
 			lock (_TargetsLock) {
 				var list = new List<ILogTarget> (_Targets);
 				list.Remove (t);
@@ -62,7 +65,8 @@ namespace Unlog
 			}
 		}
 
-		public static void ClearTargets () {
+		public static void ClearTargets ()
+		{
 			lock (_TargetsLock) {
 				var list = new List<ILogTarget> ();
 				_Targets = list;
@@ -95,11 +99,13 @@ namespace Unlog
 		private readonly int _Indent;
 
 		/// <summary>
-		/// A Stash we write to, if this is a stashed log. Stashed logs are never written directly, but the
-		/// next time the ancestor history of the current node contains no stashed nodes.
+		/// A Stash we write to, if this is a stashed log. Stashed logs are never written
+		/// directly, but the next time the ancestor history of the current node contains
+		/// no stashed nodes.
 		///
-		/// This means that a stashed node A inside a nonstashed node B inside a stashed node C with parent D
-		/// will not be written until control goes back to D (instead of B).
+		/// This means that a stashed node A inside a nonstashed node B inside a stashed
+		/// node C with parent D will not be written until control goes back to D (instead
+		/// of B).
 		/// </summary>
 		private readonly StringBuilder _Stash;
 
@@ -155,7 +161,8 @@ namespace Unlog
 		/// <summary>
 		/// Enter a regular log block. This increases indentation by 1.
 		///
-		/// If the block is stashed, it will not be written until there are no stashed blocks present in the hierarchy.
+		/// If the block is stashed, it will not be written until there are no stashed
+		/// blocks present in the hierarchy.
 		/// </summary>
 		public static void Enter (bool stashed)
 		{
@@ -250,7 +257,8 @@ namespace Unlog
 			}
 		}
 
-		private static readonly BlockingCollection<WriteTask> _WriteQueue = new BlockingCollection<WriteTask> ();
+		private static readonly BlockingCollection<WriteTask> _WriteQueue
+			= new BlockingCollection<WriteTask> ();
 
 		private static void WriteThread ()
 		{
@@ -287,7 +295,9 @@ namespace Unlog
 
 				// Case "\FX"
 				if (rs.Eat ("\\F")) {
-					var c = Int32.Parse (new string (rs.Read (), 1), NumberStyles.HexNumber);
+					var c = Int32.Parse (
+						new string (rs.Read (), 1),
+						NumberStyles.HexNumber);
 
 					foreach (var t in targets) {
 						t.Write (sb.ToString ());
@@ -300,7 +310,9 @@ namespace Unlog
 
 				// Case "\BX"
 				if (rs.Eat ("\\B")) {
-					var c = Int32.Parse (new string (rs.Read (), 1), NumberStyles.HexNumber);
+					var c = Int32.Parse (
+						new string (rs.Read (), 1),
+						NumberStyles.HexNumber);
 
 					foreach (var t in targets) {
 						t.Write (sb.ToString ());
@@ -324,8 +336,7 @@ namespace Unlog
 			sb.Clear ();
 
 			if (flush) {
-				foreach (var t in targets)
-				{
+				foreach (var t in targets) {
 					t.Flush ();
 				}
 			}
@@ -355,16 +366,14 @@ namespace Unlog
 
 		public static ConsoleColor ForegroundColor
 		{
-			set
-			{
+			set {
 				_Cur.WriteOrStash ("\\F" + ((int) value).ToString ("X"));
 			}
 		}
 
 		public static ConsoleColor BackgroundColor
 		{
-			set
-			{
+			set {
 				_Cur.WriteOrStash ("\\B" + ((int) value).ToString ("X"));
 			}
 		}
