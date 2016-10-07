@@ -65,7 +65,7 @@ namespace UnlogTest
 			}
 		}
 
-		private class TestNull : Tester
+		private class TestLogNull : Tester
 		{
 			internal override ILogTarget Create ()
 			{
@@ -73,7 +73,7 @@ namespace UnlogTest
 			}
 		}
 
-		private class TestConsole : Tester
+		private class TestLogConsole : Tester
 		{
 			internal override ILogTarget Create ()
 			{
@@ -81,7 +81,7 @@ namespace UnlogTest
 			}
 		}
 
-		private class TestFile : Tester
+		private class TestLogFile : Tester
 		{
 			private string path;
 			private FileLogTarget target;
@@ -134,16 +134,16 @@ namespace UnlogTest
 		static void Main (string[] args)
 		{
 			Log.WriteLine ("Generating test data");
-			const int DataCount = 10000;
+			const int DataCount = 1000;
 			var data = Enumerable
 				.Range (0, DataCount)
 				.Select (i => GenerateNoise (i * i % 361 + i % 169))
 				.ToArray ();
 			var results = new Tester[] {
 				new TestDirectConsole (),
-				new TestNull (),
-				new TestConsole (),
-				new TestFile (),
+				new TestLogNull (),
+				new TestLogConsole (),
+				new TestLogFile (),
 			};
 
 			Log.WriteLine ("Begin measurement");
@@ -160,7 +160,7 @@ namespace UnlogTest
 			Log.WriteLine ("Measurements completed");
 			var totalBytes = data.Sum (s => s.Length);
 			var bytesPerCall = 1.0 * totalBytes / data.Length;
-			Log.WriteLine (bytesPerCall.ToString ("0.0") + " bytes per write");
+			Log.WriteLine (bytesPerCall.ToString ("0.0") + " bytes per write:");
 
 			foreach (var tester in results) {
 				var t1 = tester.MedianTime (false);
@@ -170,7 +170,7 @@ namespace UnlogTest
 				var kcallsPerSecond1 = DataCount / t1 / 1000;
 				var kcallsPerSecond2 = DataCount / t2 / 1000;
 				Console.WriteLine (""
-					+ tester.Name + ": "
+					+ tester.Name.PadLeft (13) + ": "
 					+ dt1.ToString ("0.0") + " / " + dt2.ToString ("0.0") + " µs, "
 					+ kcallsPerSecond1.ToString ("0.0") + " / " + kcallsPerSecond2.ToString ("0.0") + " kHz");
 			}

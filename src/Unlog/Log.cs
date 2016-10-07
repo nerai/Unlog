@@ -143,9 +143,9 @@ namespace Unlog
 		}
 
 		/// <summary>
-		/// Enter a local log block. These share indentation with their parents and are stashed and kept by
-		/// default. Their main purpose is to increase performance, as they allow several lines worth of log
-		/// text to be written in a single command.
+		/// Enter a local log block. These share indentation with their parents and are
+		/// stashed and kept by default. Their main purpose is to increase performance, as
+		/// they allow several lines worth of log text to be written in a single command.
 		///
 		/// These blocks should always be used with <c>using (var log = Log.BeginLocal())</c>.
 		///
